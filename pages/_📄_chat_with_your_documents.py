@@ -11,11 +11,11 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.vectorstores import DocArrayInMemorySearch
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 os.environ["COHERE_API_KEY"]='P7b3enduxOgEYHdhY4X0xBu7j7Q125sAZ3MMdSWy'
-
+import pymongo
+from pymongo import MongoClient
 st.set_page_config(page_title="ChatPDF", page_icon="📄")
 st.header('Chat with your documents')
 st.write('Has access to custom documents and can respond to user queries by referring to the content within those documents')
-
 class CustomDataChatbot:
 
     def __init__(self):
@@ -80,9 +80,11 @@ class CustomDataChatbot:
         if not uploaded_files:
             st.error("Please upload PDF documents to continue!")
             st.stop()
-
-        user_query = st.chat_input(placeholder="Ask me anything!")
-
+        client = MongoClient("mongodb+srv://patho:patho@patho.tcjjkya.mongodb.net/?retryWrites=true&w=majority")
+        db=client['patho']
+        cht_info=db.cht_info
+        user_query = st.chat_input(placeholder="Ask the doc....")
+        cht_info.insert_one({'query': user_query})
         if uploaded_files and user_query:
             qa_chain = self.setup_qa_chain(uploaded_files)
 
